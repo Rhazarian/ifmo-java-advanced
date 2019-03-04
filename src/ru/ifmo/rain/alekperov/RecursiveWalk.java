@@ -1,9 +1,6 @@
 package ru.ifmo.rain.alekperov;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -45,7 +42,7 @@ public class RecursiveWalk {
         }
     }
 
-    private static void writeHash(BufferedWriter outputWriter, int hash, String file) throws IOException {
+    private static void writeHash(final BufferedWriter outputWriter, final int hash, final String file) throws IOException {
         try {
             outputWriter.write(String.format("%08x", hash));
             outputWriter.write(' ');
@@ -57,41 +54,42 @@ public class RecursiveWalk {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         if (args == null || args.length != 2 || args[0] == null || args[1] == null) {
             showUsage();
             return;
         }
-        final Path input = getPath(args, 0);
+        final var input = getPath(args, 0);
         if (input == null) {
             return;
         }
-        final Path output = getPath(args, 1);
+        final var output = getPath(args, 1);
         if (output == null) {
             return;
         }
-        try (final BufferedReader inputReader = Files.newBufferedReader(input, StandardCharsets.UTF_8)) {
-            try (final BufferedWriter outputWriter = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
+
+        try (final var inputReader = Files.newBufferedReader(input, StandardCharsets.UTF_8)) {
+            try (final var outputWriter = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
                 try {
                     String line;
                     while ((line = inputReader.readLine()) != null) {
                         final Path path;
                         try {
                             path = Paths.get(line);
-                        } catch (InvalidPathException ex) {
+                        } catch (final InvalidPathException ex) {
                             showInvalidPathError(ex);
                             writeHash(outputWriter, 0, line);
                             continue;
                         }
                         try {
                             Files.walkFileTree(path, new SimpleFileVisitor<>() {
-                                private FileVisitResult processFail(Path file) throws IOException {
+                                private FileVisitResult processFail(final Path file) throws IOException {
                                     writeHash(outputWriter, 0, file.toString());
                                     return FileVisitResult.CONTINUE;
                                 }
 
                                 @Override
-                                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                                public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
                                     if (attrs.isDirectory()) {
                                         return FileVisitResult.CONTINUE;
                                     }
@@ -114,23 +112,23 @@ public class RecursiveWalk {
                                 }
 
                                 @Override
-                                public FileVisitResult visitFileFailed(Path file, IOException ex) throws IOException {
+                                public FileVisitResult visitFileFailed(final Path file, final IOException ex) throws IOException {
                                     showOpenError(file.toString(), ex);
                                     return processFail(file);
                                 }
                             });
-                        } catch (IOException ex) {
+                        } catch (final IOException ex) {
                             showWriteError(output.toString(), ex);
                             break;
                         }
                     }
-                } catch (IOException ex) {
+                } catch (final IOException ex) {
                     showReadError(input.toString(), ex);
                 }
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 showOpenError(output.toString(), ex);
             }
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             showOpenError(input.toString(), ex);
         }
     }

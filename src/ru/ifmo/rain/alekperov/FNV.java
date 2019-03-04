@@ -10,7 +10,7 @@ public class FNV {
 
     public static int get32BitHash(final InputStream is) throws IOException {
         int hash = FNV_32_INIT;
-        byte[] buffer = new byte[1024];
+        final var buffer = new byte[1024];
         int c;
         while ((c = is.read(buffer)) != -1) {
             for (int i = 0; i < c; ++i) {

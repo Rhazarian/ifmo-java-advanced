@@ -239,7 +239,7 @@ public class Implementor implements Impler {
                 writeMethods(clazz, sourceWriter);
                 writeFooter(sourceWriter);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new ImplerException(e);
         }
     }
@@ -257,10 +257,10 @@ public class Implementor implements Impler {
         try {
             final var clazz = Class.forName(args[0]);
             (new Implementor()).implement(clazz, Path.of("."));
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             System.out.println("Could not find the specified class:");
             System.out.println(e.getMessage());
-        } catch (ImplerException e) {
+        } catch (final ImplerException e) {
             System.out.println("An error occurred while implementing the specified class:");
             System.out.println(e.getMessage());
         }
