@@ -168,10 +168,11 @@ public class Implementor implements Impler {
     private static void writeHeader(final Class<?> clazz, final Writer writer) throws IOException {
         writer.append(PACKAGE).append(SPACE).append(clazz.getPackageName()).append(SEMICOLON).append(EOLN);
         writer.write(EOLN);
-        writer.append(PUBLIC).append(SPACE).append(CLASS).append(SPACE).append(getImplName(clazz)).
-                append(getTypeParametersString(clazz)).
+        writer.append(PUBLIC).append(SPACE).append(CLASS).
+                append(SPACE).append(getImplName(clazz)).append(getTypeParametersString(clazz)).
                 append(SPACE).append(clazz.isInterface() ? IMPLEMENTS : EXTENDS).
-                append(SPACE).append(clazz.getSimpleName()).append(getTypeParametersString(clazz)).append(SPACE).append(OPENING_BRACE).append(EOLN);
+                append(SPACE).append(clazz.getSimpleName()).append(getTypeParametersString(clazz)).
+                append(SPACE).append(OPENING_BRACE).append(EOLN);
     }
 
     private static void writeConstructorBody(final Constructor constructor, final Writer writer) throws IOException {
