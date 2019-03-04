@@ -232,13 +232,11 @@ public class Implementor implements Impler {
             throw new ImplerException(String.format("You may not implement %s", clazz.getCanonicalName()));
         }
         Objects.requireNonNull(path);
-        try {
-            try (final var sourceWriter = prepareWriter(clazz, path)) {
-                writeHeader(clazz, sourceWriter);
-                writeConstructors(clazz, sourceWriter);
-                writeMethods(clazz, sourceWriter);
-                writeFooter(sourceWriter);
-            }
+        try (final var sourceWriter = prepareWriter(clazz, path)) {
+            writeHeader(clazz, sourceWriter);
+            writeConstructors(clazz, sourceWriter);
+            writeMethods(clazz, sourceWriter);
+            writeFooter(sourceWriter);
         } catch (final Exception e) {
             throw new ImplerException(e);
         }
