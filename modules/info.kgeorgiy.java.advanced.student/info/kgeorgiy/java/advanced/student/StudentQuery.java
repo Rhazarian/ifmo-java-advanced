@@ -20,7 +20,7 @@ public interface StudentQuery {
     /** Returns student {@link Student#getGroup() groups}. */
     List<String> getGroups(final List<Student> students);
 
-    /** Returns student {@link Student#getGroup() groups}. */
+    /** Returns full student name. */
     List<String> getFullNames(final List<Student> students);
 
     /** Returns distinct student {@link Student#getFirstName() first names} in alphabetical order. */
