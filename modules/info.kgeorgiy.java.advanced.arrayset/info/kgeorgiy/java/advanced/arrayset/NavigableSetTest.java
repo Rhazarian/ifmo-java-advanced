@@ -152,7 +152,7 @@ public class NavigableSetTest extends SortedSetTest {
             for (final Pair<Integer, Integer> p : somePairs(fixedValues(all), fixedValues(all))) {
                 final Integer from = p.getFirst();
                 final Integer to = p.getSecond();
-                if (comparator.compare(from, to) <= 0) {
+                if (comparator != null && comparator.compare(from, to) <= 0 || comparator == null && from <= to) {
                     for (int i = 0; i < 4; i++) {
                         assertEq(
                                 set.subSet(from, i % 2 == 1, to, i / 2 == 1),
@@ -171,15 +171,19 @@ public class NavigableSetTest extends SortedSetTest {
 
     @Test
     public void test38_mutators() {
-        final NavigableSet<Integer> set = set(Arrays.asList(1, 2, 3), Integer::compareTo);
+        final NavigableSet<Integer> set = set(List.of(1, 2, 3), Integer::compareTo);
         testMutator(set::pollFirst);
         testMutator(set::pollLast);
     }
 
     @Test
     public void test39_descendingSet() {
-        final NavigableSet<Integer> set = set(Arrays.asList(10, 20, 30), Integer::compareTo).descendingSet();
-        assertEquals("toArray()", Arrays.asList(30, 20, 10), toArray(set));
+        testDescendingSet(set(List.of(10, 20, 30), Integer::compareTo).descendingSet());
+        testDescendingSet(set(List.of(10, 20, 30), null).descendingSet());
+    }
+
+    private static void testDescendingSet(final NavigableSet<Integer> set) {
+        assertEquals("toArray()", List.of(30, 20, 10), toArray(set));
         assertEquals("size()", 3, set.size());
         assertEquals("first()", 30, set.first().intValue());
         assertEquals("last()", 10, set.last().intValue());
@@ -192,8 +196,7 @@ public class NavigableSetTest extends SortedSetTest {
 
         testGet("headSet(%s).size()", i -> set.headSet(i).size(), descendingPairs(3, 2, 2, 1, 1, 0, 0));
         testGet("tailSet(%s).size()", i -> set.tailSet(i).size(), descendingPairs(0, 1, 1, 2, 2, 3, 3));
-
-        assertEquals("descendingSet().toArray()", Arrays.asList(10, 20, 30), toArray(set.descendingSet()));
+        assertEquals("descendingSet().toArray()", List.of(10, 20, 30), toArray(set.descendingSet()));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

@@ -70,8 +70,8 @@ public class SortedSetTest extends BaseTest {
         }
     }
 
-    protected Iterable<Pair<NamedComparator, List<Integer>>> withComparator() {
-        return somePairs(comparators, lists(integers()));
+    protected static Iterable<Pair<NamedComparator, List<Integer>>> withComparator() {
+        return somePairs(NAMED_COMPARATORS, lists(integers()));
     }
 
     @Test
@@ -159,7 +159,7 @@ public class SortedSetTest extends BaseTest {
         });
     }
 
-    private void performance(final String description, final Runnable runnable) {
+    private static void performance(final String description, final Runnable runnable) {
         runnable.run();
 
         final long start = System.currentTimeMillis();
@@ -173,15 +173,15 @@ public class SortedSetTest extends BaseTest {
         return set(new Random().ints().limit(size).boxed().collect(Collectors.toList()));
     }
 
-    private List<Integer> toList(final SortedSet<Integer> set) {
+    private static List<Integer> toList(final SortedSet<Integer> set) {
         return new ArrayList<>(set);
     }
 
-    protected List<Number> toArray(final SortedSet<Integer> set) {
+    protected static List<Number> toArray(final SortedSet<Integer> set) {
         return Arrays.asList(set.toArray(new Number[0]));
     }
 
-    private TreeSet<Integer> treeSet(final List<Integer> elements) {
+    private static TreeSet<Integer> treeSet(final List<Integer> elements) {
         return new TreeSet<>(elements);
     }
 
@@ -193,10 +193,10 @@ public class SortedSetTest extends BaseTest {
         return create(new Object[]{elements, comparator}, Collection.class, Comparator.class);
     }
 
-    protected void assertEq(final SortedSet<Integer> set, final SortedSet<Integer> treeSet, final String context) {
+    protected static void assertEq(final SortedSet<Integer> set, final SortedSet<Integer> treeSet, final String context) {
         Assert.assertEquals("invalid element order " + context, toList(treeSet), toList(set));
-        Assert.assertEquals("invalid toArray " + context, toArray(set), toArray(set));
-        Assert.assertEquals("invalid set size " + context, treeSet.size(), (Object) set.size());
+        Assert.assertEquals("invalid toArray " + context, toArray(treeSet), toArray(set));
+        Assert.assertEquals("invalid set size " + context, treeSet.size(), set.size());
         Assert.assertEquals("invalid isEmpty " + context, treeSet.isEmpty(), set.isEmpty());
         Assert.assertSame("invalid comparator " + context, treeSet.comparator(), set.comparator());
     }
@@ -207,13 +207,13 @@ public class SortedSetTest extends BaseTest {
         return set;
     }
     
-    protected final class NamedComparator implements Comparator<Integer> {
+    protected static final class NamedComparator implements Comparator<Integer> {
         private final String name;
         private final Comparator<Integer> comparator;
 
         private NamedComparator(final String name, final Comparator<Integer> comparator) {
             this.name = name;
-            this.comparator = comparator;
+            this.comparator = comparator != null ? comparator : Comparator.naturalOrder();
         }
 
         @Override
@@ -227,12 +227,13 @@ public class SortedSetTest extends BaseTest {
         }
     }
 
-    private final Generator<NamedComparator> comparators = fixedValues(Arrays.asList(
+    private static final Generator<NamedComparator> NAMED_COMPARATORS = fixedValues(Arrays.asList(
             new NamedComparator("Natural order", Integer::compare),
             new NamedComparator("Reverse order", Comparator.comparingInt(Integer::intValue).reversed()),
             new NamedComparator("Div 100", Comparator.comparingInt(i -> i / 100)),
             new NamedComparator("Even first", Comparator.<Integer>comparingInt(i -> i % 2).thenComparing(Integer::intValue)),
-            new NamedComparator("All equal", Comparator.comparingInt(i -> 0))
+            new NamedComparator("All equal", Comparator.comparingInt(i -> 0)),
+            null
     ));
 
     private SortedSet<Integer> create(final Object[] params, final Class<?>... types) {
@@ -319,7 +320,7 @@ public class SortedSetTest extends BaseTest {
             for (final Pair<Integer, Integer> p : somePairs(fixedValues(all), fixedValues(all))) {
                 final Integer from = p.getFirst();
                 final Integer to = p.getSecond();
-                if (comparator.compare(from, to) <= 0) {
+                if (comparator == null ? from <= to : comparator.compare(from, to) <= 0) {
                     assertEq(
                             set.subSet(from, to),
                             treeSet.subSet(from, to),
