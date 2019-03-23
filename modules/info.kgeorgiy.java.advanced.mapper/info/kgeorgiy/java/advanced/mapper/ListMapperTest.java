@@ -1,7 +1,7 @@
 package info.kgeorgiy.java.advanced.mapper;
 
-import info.kgeorgiy.java.advanced.concurrent.FullListIPTest;
 import info.kgeorgiy.java.advanced.concurrent.ListIP;
+import info.kgeorgiy.java.advanced.concurrent.ListIPTest;
 import org.junit.AfterClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import java.util.List;
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ListMapperTest extends FullListIPTest {
+public class ListMapperTest extends ListIPTest {
     public ListMapperTest() {
         factors = List.of(1, 2, 5, 10);
     }

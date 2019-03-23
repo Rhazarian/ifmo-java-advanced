@@ -13,7 +13,7 @@ public interface ListIP extends ScalarIP {
     /**
      * Join values to string.
      *
-     * @param threads number or concurrent threads.
+     * @param threads number of concurrent threads.
      * @param values values to join.
      *
      * @return list of joined result of {@link #toString()} call on each value.
@@ -25,7 +25,7 @@ public interface ListIP extends ScalarIP {
     /**
      * Filters values by predicate.
      *
-     * @param threads number or concurrent threads.
+     * @param threads number of concurrent threads.
      * @param values values to filter.
      * @param predicate filter predicate.
      *
@@ -36,9 +36,9 @@ public interface ListIP extends ScalarIP {
     <T> List<T> filter(final int threads, final List<? extends T> values, final Predicate<? super T> predicate) throws InterruptedException;
 
     /**
-     * Mas values.
+     * Maps values.
      *
-     * @param threads number or concurrent threads.
+     * @param threads number of concurrent threads.
      * @param values values to filter.
      * @param f mapper function.
      *

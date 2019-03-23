@@ -21,6 +21,17 @@ import java.util.function.Predicate;
 public class ScalarIPTest<P extends ScalarIP> extends BaseIPTest<P> {
     public static final int PROCESSORS = Runtime.getRuntime().availableProcessors();
 
+    public static final Comparator<Integer> BURN_COMPARATOR = (o1, o2) -> {
+        int total = o1 + o2;
+        for (int i = 0; i < 5_000_000; i++) {
+            total += i;
+        }
+        if (total == o1 + o2) {
+            throw new AssertionError();
+        }
+        return Integer.compare(o1, o2);
+    };
+
     public static final Comparator<Integer> SLEEP_COMPARATOR = (o1, o2) -> {
         try {
             Thread.sleep(10);
@@ -55,6 +66,15 @@ public class ScalarIPTest<P extends ScalarIP> extends BaseIPTest<P> {
         final List<Integer> data = randomList(100 * PROCESSORS);
         final double speedup = speedup(data, SLEEP_COMPARATOR, PROCESSORS * 2);
         Assert.assertTrue("Not parallel", speedup > 0.66);
+        Assert.assertTrue("Too parallel", speedup < 1.5);
+    }
+
+    @Test
+    public void test06_burnPerformance() throws InterruptedException {
+        final List<Integer> data = randomList(100 * PROCESSORS);
+        final double speedup = speedup(data, BURN_COMPARATOR, PROCESSORS);
+        Assert.assertTrue("Not parallel", speedup > 0.66);
+        Assert.assertTrue("Too parallel", speedup < 1.5);
     }
 
     protected double speedup(final List<Integer> data, final Comparator<Integer> comparator, final int threads) throws InterruptedException {

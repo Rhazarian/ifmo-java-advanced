@@ -1,7 +1,7 @@
 package info.kgeorgiy.java.advanced.mapper;
 
-import info.kgeorgiy.java.advanced.concurrent.FullScalarIPTest;
 import info.kgeorgiy.java.advanced.concurrent.ScalarIP;
+import info.kgeorgiy.java.advanced.concurrent.ScalarIPTest;
 import org.junit.AfterClass;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
@@ -12,7 +12,7 @@ import java.util.List;
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ScalarMapperTest extends FullScalarIPTest<ScalarIP> {
+public class ScalarMapperTest extends ScalarIPTest<ScalarIP> {
     private static ParallelMapper parallelMapper;
     public ScalarMapperTest() {
         factors = List.of(1, 2, 5, 10);
