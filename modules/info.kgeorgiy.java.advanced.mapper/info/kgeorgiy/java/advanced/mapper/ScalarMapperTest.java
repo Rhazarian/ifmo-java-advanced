@@ -15,7 +15,7 @@ import java.util.List;
 public class ScalarMapperTest extends ScalarIPTest<ScalarIP> {
     private static ParallelMapper parallelMapper;
     public ScalarMapperTest() {
-        factors = List.of(1, 2, 5, 10);
+        factors = List.of(1, 2, 5, 10, 20);
     }
 
     static Object create(final String className, final Class<?> argType, final Object value) {
