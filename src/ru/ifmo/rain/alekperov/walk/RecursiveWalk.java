@@ -1,4 +1,4 @@
-package ru.ifmo.rain.alekperov;
+package ru.ifmo.rain.alekperov.walk;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

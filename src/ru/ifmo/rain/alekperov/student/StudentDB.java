@@ -1,4 +1,4 @@
-package ru.ifmo.rain.alekperov;
+package ru.ifmo.rain.alekperov.student;
 
 import info.kgeorgiy.java.advanced.student.Group;
 import info.kgeorgiy.java.advanced.student.Student;
@@ -27,26 +27,26 @@ public class StudentDB implements StudentGroupQuery {
     }
 
     private static Stream<Group> getSortedGroupStream(final Collection<Student> collection,
-                                               final Comparator<? super Student> studentOrder,
-                                               final Comparator<? super Group> groupOrder) {
+                                                      final Comparator<? super Student> studentOrder,
+                                                      final Comparator<? super Group> groupOrder) {
         return getGroupStream(collection, studentOrder).sorted(groupOrder);
     }
 
     private static Optional<Group> getMaxGroup(final Collection<Student> collection,
-                                        final Comparator<? super Student> studentOrder,
-                                        final Comparator<? super Group> groupOrder) {
+                                               final Comparator<? super Student> studentOrder,
+                                               final Comparator<? super Group> groupOrder) {
         return getGroupStream(collection, studentOrder).max(groupOrder);
     }
 
     private static String getMaxGroupName(final Collection<Student> collection,
-                                   final Comparator<? super Student> studentOrder,
-                                   final Comparator<? super Group> groupOrder) {
+                                          final Comparator<? super Student> studentOrder,
+                                          final Comparator<? super Group> groupOrder) {
         return getMaxGroup(collection, studentOrder, groupOrder).map(Group::getName).orElse(EMPTY);
     }
 
     private static <T, C extends Collection<T>> C mapStudentList(final List<Student> list,
-                                       final Function<? super Student, ? extends T> mapper,
-                                       final Supplier<C> collectionSupplier) {
+                                                                 final Function<? super Student, ? extends T> mapper,
+                                                                 final Supplier<C> collectionSupplier) {
         return list.stream().map(mapper).collect(Collectors.toCollection(collectionSupplier));
     }
 

@@ -1,27 +1,27 @@
-package ru.ifmo.rain.alekperov;
+package ru.ifmo.rain.alekperov.arrayset;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ArraySet<T> extends AbstractSet<T> implements NavigableSet<T> {
+public class ArraySet<E> extends AbstractSet<E> implements NavigableSet<E> {
 
-    private final List<T> storage;
-    private final Comparator<? super T> comparator;
+    private final List<E> storage;
+    private final Comparator<? super E> comparator;
 
     public ArraySet() {
         this(Collections.emptyList());
     }
 
-    public ArraySet(final Collection<? extends T> collection) {
+    public ArraySet(final Collection<? extends E> collection) {
         this(collection, null);
     }
 
-    public ArraySet(final Collection<? extends T> collection, final Comparator<? super T> comparator) {
-        this(new ArrayList<>(collection.stream().collect(Collectors.toCollection(() -> new TreeSet<T>(comparator)))),
+    public ArraySet(final Collection<? extends E> collection, final Comparator<? super E> comparator) {
+        this(new ArrayList<>(collection.stream().collect(Collectors.toCollection(() -> new TreeSet<E>(comparator)))),
                 comparator);
     }
 
-    private ArraySet(final List<T> storage, final Comparator<? super T> comparator) {
+    private ArraySet(final List<E> storage, final Comparator<? super E> comparator) {
         this.storage = storage;
         this.comparator = comparator;
     }
@@ -30,83 +30,80 @@ public class ArraySet<T> extends AbstractSet<T> implements NavigableSet<T> {
         return (index >= 0 && index < size());
     }
 
-    private T get(final int index) {
+    private E get(final int index) {
         return storage.get(index);
     }
 
-    private T getOrNull(final int index) {
+    private E getOrNull(final int index) {
         return isIndexInRange(index) ? get(index) : null;
     }
 
-    private int binarySearch(final Object o) {
-        final int result = Collections.binarySearch(storage, (T) o, comparator);
+    private int binarySearch(final E e) {
+        final int result = Collections.binarySearch(storage, e, comparator);
         return (result >= 0) ? result : (-1 - result);
     }
 
-    private int ceilingIndex(final T e) {
+    private int ceilingIndex(final E e) {
         return binarySearch(e);
     }
 
-    private int higherIndex(final T e) {
+    private int higherIndex(final E e) {
         final int result = binarySearch(e);
         return (result < size() && compare(e, get(result)) == 0) ? (result + 1) : result;
     }
 
-    private int floorIndex(final T e) {
+    private int floorIndex(final E e) {
         final int result = binarySearch(e);
         return (result < size() && compare(e, get(result)) == 0) ? result : (result - 1);
     }
 
-    private int lowerIndex(final T e) {
+    private int lowerIndex(final E e) {
         return binarySearch(e) - 1;
     }
 
-    private int compare(final T e1, final T e2) {
-        if (e1 instanceof Comparable) {
-            
-        }
-        return comparator == null ? ((Comparable<? super T>) e1).compareTo(e2) : comparator.compare(e1, e2);
+    private int compare(final E e1, final E e2) {
+        return Collections.reverseOrder(comparator).reversed().compare(e1, e2);
     }
 
-    private void checkBounds(final boolean fromStart, final T lo, final boolean toEnd, final T hi) {
+    private void checkBounds(final boolean fromStart, final E lo, final boolean toEnd, final E hi) {
         if (!fromStart && !toEnd && compare(lo, hi) > 0) {
             throw new IllegalArgumentException("fromElement > toElement");
         }
     }
 
-    private int getSubSetStartIndex(final boolean fromStart, T lo, final boolean loInclusive) {
+    private int getSubSetStartIndex(final boolean fromStart, final E lo, final boolean loInclusive) {
         return fromStart ? 0 : (loInclusive ? ceilingIndex(lo) : higherIndex(lo));
     }
 
-    private int getSubSetEndIndex(final boolean toEnd, T hi, final boolean hiInclusive) {
+    private int getSubSetEndIndex(final boolean toEnd, final E hi, final boolean hiInclusive) {
         return toEnd ? size() : ((hiInclusive ? floorIndex(hi) : lowerIndex(hi)) + 1);
     }
 
-    private NavigableSet<T> getSubSet(final boolean fromStart, final T fromElement, final boolean fromInclusive,
-                                      final boolean toEnd, final T toElement, final boolean toInclusive) {
+    private NavigableSet<E> getSubSet(final boolean fromStart, final E fromElement, final boolean fromInclusive,
+                                      final boolean toEnd, final E toElement, final boolean toInclusive) {
         checkBounds(fromStart, fromElement, toEnd, toElement);
         final int start = getSubSetStartIndex(fromStart, fromElement, fromInclusive);
-        final int end = Math.max(start, getSubSetEndIndex(toEnd, toElement, toInclusive));
-        return new ArraySet<>(storage.subList(start, end), comparator);
+        final int end = getSubSetEndIndex(toEnd, toElement, toInclusive);
+        return new ArraySet<>(storage.subList(start, Math.max(start, end)), comparator);
     }
 
     @Override
-    public T lower(final T e) {
+    public E lower(final E e) {
         return getOrNull(lowerIndex(e));
     }
 
     @Override
-    public T floor(final T e) {
+    public E floor(final E e) {
         return getOrNull(floorIndex(e));
     }
 
     @Override
-    public T ceiling(final T e) {
+    public E ceiling(final E e) {
         return getOrNull(ceilingIndex(e));
     }
 
     @Override
-    public T higher(final T e) {
+    public E higher(final E e) {
         return getOrNull(higherIndex(e));
     }
 
@@ -117,57 +114,59 @@ public class ArraySet<T> extends AbstractSet<T> implements NavigableSet<T> {
 
     @Override
     public boolean contains(final Object o) {
-        return Collections.binarySearch(storage, (T) o, comparator) >= 0;
+        @SuppressWarnings("unchecked")
+            final int pos = Collections.binarySearch(storage, (E) o, comparator);
+        return pos >= 0;
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<E> iterator() {
         return Collections.unmodifiableList(storage).iterator();
     }
 
     @Override
-    public NavigableSet<T> descendingSet() {
-        return new ArraySet<>(new ReversedListView<>(storage), comparator == null ? null : comparator.reversed());
+    public NavigableSet<E> descendingSet() {
+        return new ArraySet<>(new ReversedListView<>(storage), Collections.reverseOrder(comparator));
     }
 
     @Override
-    public Iterator<T> descendingIterator() {
+    public Iterator<E> descendingIterator() {
         return new ReversedListView<>(storage).iterator();
     }
 
     @Override
-    public NavigableSet<T> subSet(final T fromElement, final boolean fromInclusive,
-                                  final T toElement, final boolean toInclusive) {
+    public NavigableSet<E> subSet(final E fromElement, final boolean fromInclusive,
+                                  final E toElement, final boolean toInclusive) {
         return getSubSet(false, fromElement, fromInclusive, false, toElement, toInclusive);
     }
 
     @Override
-    public NavigableSet<T> subSet(final T fromElement, final T toElement) {
+    public NavigableSet<E> subSet(final E fromElement, final E toElement) {
         return subSet(fromElement, true, toElement, false);
     }
 
     @Override
-    public NavigableSet<T> headSet(final T toElement, final boolean inclusive) {
+    public NavigableSet<E> headSet(final E toElement, final boolean inclusive) {
         return getSubSet(true, null, false, false, toElement, inclusive);
     }
 
     @Override
-    public NavigableSet<T> headSet(final T toElement) {
+    public NavigableSet<E> headSet(final E toElement) {
         return headSet(toElement, false);
     }
 
     @Override
-    public NavigableSet<T> tailSet(final T fromElement, final boolean inclusive) {
+    public NavigableSet<E> tailSet(final E fromElement, final boolean inclusive) {
         return getSubSet(false, fromElement, inclusive, true, null, true);
     }
 
     @Override
-    public NavigableSet<T> tailSet(final T fromElement) {
+    public NavigableSet<E> tailSet(final E fromElement) {
         return tailSet(fromElement, true);
     }
 
     @Override
-    public Comparator<? super T> comparator() {
+    public Comparator<? super E> comparator() {
         return comparator;
     }
 
@@ -178,24 +177,24 @@ public class ArraySet<T> extends AbstractSet<T> implements NavigableSet<T> {
     }
 
     @Override
-    public T first() {
+    public E first() {
         requireNotEmpty();
         return get(0);
     }
 
     @Override
-    public T last() {
+    public E last() {
         requireNotEmpty();
         return get(size() - 1);
     }
 
     @Override
-    public T pollFirst() {
+    public E pollFirst() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public T pollLast() {
+    public E pollLast() {
         throw new UnsupportedOperationException();
     }
 

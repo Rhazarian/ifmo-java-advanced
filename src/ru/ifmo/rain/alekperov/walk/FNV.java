@@ -1,4 +1,4 @@
-package ru.ifmo.rain.alekperov;
+package ru.ifmo.rain.alekperov.walk;
 
 import java.io.IOException;
 import java.io.InputStream;
