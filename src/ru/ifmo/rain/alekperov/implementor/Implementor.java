@@ -376,6 +376,7 @@ public class Implementor implements JarImpler {
      * of the specified {@link Class class} to be non-abstract.
      *
      * @param clazz the class to be checked.
+     * @return the set filled with the required methods.
      * @throws NullPointerException if {@code clazz} is {@code null}.
      */
     private static Set<MethodWrapper> getAbstractMethods(final Class<?> clazz) {
@@ -631,7 +632,9 @@ public class Implementor implements JarImpler {
      * Prints a helper message to the standard output.
      */
     private static void showUsage() {
-        System.out.printf("Usage: %s [full name of class to implement]%n", Implementor.class.getName());
+        System.out.printf("Usage:%n " +
+                "First way: %1$s [full name of the class to implement]%n" +
+                "Second way: %1$s -jar [full name of the class to implement] [path to the root dir]%n", Implementor.class.getName());
     }
 
     /**

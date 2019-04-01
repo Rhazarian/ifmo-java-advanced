@@ -128,7 +128,7 @@ public class IterativeParallelism implements ListIP {
      */
     @Override
     public <T> boolean any(final int threads, final List<? extends T> values, final Predicate<? super T> predicate) throws InterruptedException {
-        return run(threads, values, s -> s.anyMatch(predicate), s -> s.anyMatch(Boolean::booleanValue));
+        return !all(threads, values, Predicate.not(predicate));
     }
 
 }
