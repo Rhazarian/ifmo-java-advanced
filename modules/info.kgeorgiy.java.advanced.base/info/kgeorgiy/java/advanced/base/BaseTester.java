@@ -60,7 +60,12 @@ public class BaseTester {
     private void printUsage() {
         System.out.println("Usage:");
         for (final String name : tests.keySet()) {
-            System.out.format("    java -cp . -p . -m %s %s .class.name [salt]%n", getClass().getPackage().getName(), name);
+            System.out.format(
+                    "    java -cp . -p . -m %s %s %s.class.name [salt]%n",
+                    getClass().getPackage().getName(),
+                    name,
+                    name
+            );
         }
         System.exit(1);
     }

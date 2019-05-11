@@ -3,6 +3,27 @@
 [Условия домашних заданий](http://www.kgeorgiy.info/courses/java-advanced/homeworks.html)
 
 
+## Домашнее задание 10. HelloUDP
+
+Тестирование
+
+ * простой вариант:
+    * клиент:
+        ```info.kgeorgiy.java.advanced.hello client <полное имя класса>```
+    * сервер:
+        ```info.kgeorgiy.java.advanced.hello server <полное имя класса>```
+ * сложный вариант:
+    * клиент:
+        ```info.kgeorgiy.java.advanced.hello client-i18n <полное имя класса>```
+    * сервер:
+        ```info.kgeorgiy.java.advanced.hello server-i18n <полное имя класса>```
+
+Исходный код тестов:
+
+* [Клиент](modules/info.kgeorgiy.java.advanced.hello/info/kgeorgiy/java/advanced/hello/HelloClientTest.java)
+* [Сервер](modules/info.kgeorgiy.java.advanced.hello/info/kgeorgiy/java/advanced/hello/HelloServerTest.java)
+
+
 ## Домашнее задание 9. Web Crawler
 
 Тестирование
