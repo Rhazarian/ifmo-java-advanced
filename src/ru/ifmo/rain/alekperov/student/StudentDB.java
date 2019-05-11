@@ -1,5 +1,6 @@
 package ru.ifmo.rain.alekperov.student;
 
+import info.kgeorgiy.java.advanced.student.AdvancedStudentGroupQuery;
 import info.kgeorgiy.java.advanced.student.Group;
 import info.kgeorgiy.java.advanced.student.Student;
 import info.kgeorgiy.java.advanced.student.StudentGroupQuery;
@@ -7,10 +8,11 @@ import info.kgeorgiy.java.advanced.student.StudentGroupQuery;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class StudentDB implements StudentGroupQuery {
+public class StudentDB implements AdvancedStudentGroupQuery {
 
     private static final Comparator<Student> NAME_COMPARATOR = Comparator.comparing(Student::getLastName)
             .thenComparing(Student::getFirstName)
@@ -44,15 +46,15 @@ public class StudentDB implements StudentGroupQuery {
         return getMaxGroup(collection, studentOrder, groupOrder).map(Group::getName).orElse(EMPTY);
     }
 
-    private static <T, C extends Collection<T>> C mapStudentList(final List<Student> list,
+    private static <T, A, R> R mapStudentList(final List<Student> list,
                                                                  final Function<? super Student, ? extends T> mapper,
-                                                                 final Supplier<C> collectionSupplier) {
-        return list.stream().map(mapper).collect(Collectors.toCollection(collectionSupplier));
+                                                                 final Collector<T, A, R> collector) {
+        return list.stream().map(mapper).collect(collector);
     }
 
     private static <T> List<T> mapStudentList(final List<Student> list,
                                               final Function<? super Student, ? extends T> mapper) {
-        return mapStudentList(list, mapper, ArrayList::new);
+        return mapStudentList(list, mapper, Collectors.toList());
     }
 
     private static <T> Stream<Student> filterStudents(final Collection<Student> collection,
@@ -126,7 +128,7 @@ public class StudentDB implements StudentGroupQuery {
 
     @Override
     public Set<String> getDistinctFirstNames(final List<Student> list) {
-        return mapStudentList(list, Student::getFirstName, TreeSet::new);
+        return mapStudentList(list, Student::getFirstName, Collectors.toCollection(TreeSet::new));
     }
 
     @Override
@@ -165,4 +167,12 @@ public class StudentDB implements StudentGroupQuery {
                 Student::getFirstName, (n1, n2) -> Stream.of(n1, n2).min(Comparator.naturalOrder()).orElseThrow()));
     }
 
+    @Override
+    public String getMostPopularName(Collection<Student> collection) {
+        return collection.stream().collect(Collectors.groupingBy(
+                s -> s.getFirstName().concat(NAME_JOINER).concat(s.getLastName()),
+                Collectors.mapping(Student::getGroup, Collectors.collectingAndThen(Collectors.toSet(), Set::size)))).
+                entrySet().stream().max(Comparator.<Map.Entry<String, Integer>>comparingInt(Map.Entry::getValue).
+                thenComparingInt(e -> e.getKey().length())).map(Map.Entry::getKey).orElse(EMPTY);
+    }
 }
