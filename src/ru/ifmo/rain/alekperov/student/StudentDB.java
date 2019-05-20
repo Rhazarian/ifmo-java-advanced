@@ -21,6 +21,10 @@ public class StudentDB implements AdvancedStudentGroupQuery {
     private static final String NAME_JOINER = " ";
     private static final String EMPTY = "";
 
+    private static String getStudentFullName(final Student student) {
+        return student.getFirstName().concat(NAME_JOINER).concat(student.getLastName());
+    }
+
     private static Stream<Group> getGroupStream(final Collection<Student> collection,
                                                 final Comparator<? super Student> studentOrder) {
         return collection.stream().collect(Collectors.groupingBy(Student::getGroup, Collectors.toCollection(() ->
@@ -123,7 +127,7 @@ public class StudentDB implements AdvancedStudentGroupQuery {
 
     @Override
     public List<String> getFullNames(final List<Student> list) {
-        return mapStudentList(list, student -> student.getFirstName() + NAME_JOINER + student.getLastName());
+        return mapStudentList(list, StudentDB::getStudentFullName);
     }
 
     @Override
@@ -169,10 +173,9 @@ public class StudentDB implements AdvancedStudentGroupQuery {
 
     @Override
     public String getMostPopularName(Collection<Student> collection) {
-        return collection.stream().collect(Collectors.groupingBy(
-                s -> s.getFirstName().concat(NAME_JOINER).concat(s.getLastName()),
+        return collection.stream().collect(Collectors.groupingBy(StudentDB::getStudentFullName,
                 Collectors.mapping(Student::getGroup, Collectors.collectingAndThen(Collectors.toSet(), Set::size)))).
                 entrySet().stream().max(Comparator.<Map.Entry<String, Integer>>comparingInt(Map.Entry::getValue).
-                thenComparingInt(e -> e.getKey().length())).map(Map.Entry::getKey).orElse(EMPTY);
+                thenComparing(Map.Entry::getKey)).map(Map.Entry::getKey).orElse(EMPTY);
     }
 }
